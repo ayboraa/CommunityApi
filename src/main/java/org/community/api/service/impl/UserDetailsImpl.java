@@ -2,55 +2,58 @@ package org.community.api.service.impl;
 
 import org.community.api.entity.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
-    private String email; // Use email as the username
-    private String password;
-    private boolean active;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final MemberEntity memberEntity;
 
-    public UserDetailsImpl(MemberEntity member) {
-        this.email = member.getEmail();
-        this.password = member.getPassword();
-       // this.active = member.isActive();
-       // this.authorities = member.getAuthorities();
+    public UserDetailsImpl(MemberEntity memberEntity) {
+        this.memberEntity = memberEntity;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (memberEntity.isAdmin()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorities;
     }
 
+
     @Override
     public String getPassword() {
-        return password;
+        return memberEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return email; // Return email as username
+        return memberEntity.getEmail(); // Assuming email is used as username
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Define your own logic if needed
+        return true; // Customize as needed
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Define your own logic if needed
+        return true; // Customize as needed
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Define your own logic if needed
+        return true; // Customize as needed
     }
 
     @Override
     public boolean isEnabled() {
-        return active; // Return the active status of the user
+        return true; // Customize as needed
     }
 }

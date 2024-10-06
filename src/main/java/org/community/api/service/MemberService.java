@@ -52,8 +52,11 @@ public class MemberService {
         Optional<MemberEntity> opt = memberRepository.findById(id.uuid());
         if(opt.isEmpty())
             throw new ResourceNotFoundException("Member with ID " + id.uuid() + " not found.");
-        else
-            return _mapper.toDTO(opt.get());
+        else {
+            MemberEntity e = opt.get();
+            e.setPassword(null);
+            return _mapper.toDTO(e);
+        }
 
     }
 

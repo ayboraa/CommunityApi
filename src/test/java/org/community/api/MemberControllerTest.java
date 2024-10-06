@@ -23,15 +23,14 @@ public class MemberControllerTest {
 
 
     @MockBean
-    private MemberService memberService;
-
-  //  @Test
-  //  public void testGetEndpoint() throws Exception {
-  //      mockMvc.perform(MockMvcRequestBuilders.get("/api/members/"))
-  //              .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-  //              .andExpect(content().json("[]"))
-  //              .andExpect(status().is2xxSuccessful());
-  //  }
+    private MemberService memberService
+    @Test
+    public void testGetEndpoint() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/members/"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[]"))
+                .andExpect(status().is2xxSuccessful());
+    }
 
 
 }

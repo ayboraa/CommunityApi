@@ -1,4 +1,4 @@
-package org.community.api.auth;
+package org.community.api.dto;
 
 public class AuthResponse {
     private String jwt;
