@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
@@ -19,7 +20,10 @@ import java.util.function.Function;
 public class JwtTokenUtil {
 
     // Ensure your secret key is 32 bytes (256 bits) long
-    private String secretKey = "your-very-secure-secret-key-256-bits"; // Replace with your actual secret key
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+
     private SecretKey signingKey;
 
     @PostConstruct
