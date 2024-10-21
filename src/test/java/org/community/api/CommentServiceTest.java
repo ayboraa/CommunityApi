@@ -2,8 +2,9 @@ package org.community.api;
 
 
 import org.community.api.common.MemberId;
-import org.community.api.service.Comment;
-import org.community.api.service.CommentService;
+import org.community.api.common.PostId;
+import org.community.api.dto.admin.AdminCommentDTO;
+import org.community.api.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -19,24 +20,31 @@ public class CommentServiceTest {
 
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Test
     public void testSingleCRUD() {
 
+        var postId = new PostId();
+
         // Test create.
-        Comment comment = new Comment(null, new MemberId(), "Sample comment.");
-        Comment savedComment = commentService.saveComment(comment);
+        AdminCommentDTO comment = new AdminCommentDTO(null, new MemberId(), "Sample comment.", postId);
+        AdminCommentDTO savedComment = commentService.saveComment(comment);
         assertThat(savedComment).isNotNull();
         assertThat(savedComment.getContent()).isEqualTo("Sample comment.");
 
         // Test read.
-        Comment foundComment = commentService.findCommentById(savedComment.getId());
+        AdminCommentDTO foundComment = commentService.findCommentById(savedComment.getId());
         assertThat(foundComment).isNotNull();
         assertThat(foundComment.getContent()).isEqualTo("Sample comment.");
 
         // Test update.
-        Comment toUpdate = new Comment(foundComment.getId(), comment.getAuthorId(), "Updated comment.");
-        Comment updatedComment = commentService.updateComment(savedComment.getId(), toUpdate);
+        AdminCommentDTO toUpdate = new AdminCommentDTO(foundComment.getId(), comment.getAuthorId(), "Updated comment.", postId);
+        AdminCommentDTO updatedComment = commentService.updateComment(savedComment.getId(), toUpdate);
         assertThat(updatedComment).isNotNull();
         assertThat(updatedComment.getContent()).isEqualTo("Updated comment.");
         // Ensure update is correct.
@@ -45,7 +53,7 @@ public class CommentServiceTest {
         assertThat(updatedComment.getContent()).isEqualTo("Updated comment.");
 
         // Test read.
-        List<Comment> commentList = commentService.getAllComments();
+        List<AdminCommentDTO> commentList = commentService.getAllComments();
         assertThat(commentList).isNotNull();
         assertThat(commentList.size()).isEqualTo(1);
 

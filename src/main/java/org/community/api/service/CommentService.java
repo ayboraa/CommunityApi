@@ -4,9 +4,10 @@ package org.community.api.service;
 import jakarta.transaction.Transactional;
 import org.community.api.common.CommentId;
 import org.community.api.controller.exception.ResourceNotFoundException;
+import org.community.api.dto.admin.AdminCommentDTO;
 import org.community.api.entity.CommentEntity;
 import org.community.api.repository.CommentRepository;
-import org.community.api.service.impl.CommentMapper;
+import org.community.api.mapper.CommentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +23,14 @@ public class CommentService {
 
     private final CommentMapper _mapper = new CommentMapper();
 
-    public Comment saveComment(Comment comment){
-        CommentEntity entity = new CommentEntity(comment.getId().uuid(), comment.getContent(), comment.getAuthorId().uuid());
+    public AdminCommentDTO saveComment(AdminCommentDTO comment){
+        CommentEntity entity = new CommentEntity(comment.getId().uuid(), comment.getContent(), comment.getAuthorId().uuid(), comment.getPostId().uuid());
         commentRepository.save(entity);
         return _mapper.toDTO(entity);
     }
 
 
-    public Comment findCommentById(CommentId id) {
+    public AdminCommentDTO findCommentById(CommentId id) {
         Optional<CommentEntity> opt = commentRepository.findById(id.uuid());
         if(opt.isEmpty())
             throw new ResourceNotFoundException("Comment with ID " + id.uuid() + " not found.");
@@ -46,13 +47,13 @@ public class CommentService {
         commentRepository.deleteById(id.uuid());
     }
 
-    public List<Comment> getAllComments() {
+    public List<AdminCommentDTO> getAllComments() {
         List<CommentEntity> entities = commentRepository.findAll();
         return _mapper.toDTOList(entities);
     }
 
     @Transactional
-    public Comment updateComment(CommentId id, Comment newComment) {
+    public AdminCommentDTO updateComment(CommentId id, AdminCommentDTO newComment) {
         return commentRepository.findById(id.uuid())
                 .map(commentEntity -> {
                     commentEntity.setContent(newComment.getContent());

@@ -12,16 +12,25 @@ public class PostEntity {
     private UUID id;
     private String title;
     private String content;
+    private UUID CategoryId;
+    private UUID MemberId;
+    // todo: Created at
 
 
-    public PostEntity(UUID id, String title, String content) {
+    public PostEntity(UUID id, String title, String content, UUID CategoryId, UUID MemberId) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.CategoryId = CategoryId;
+        this.MemberId = MemberId;
     }
 
     public PostEntity() {
     }
+
+    public UUID getCategoryId(){return CategoryId;}
+
+    public UUID getAuthorId(){return MemberId;}
 
     public UUID getId() {
         return id;

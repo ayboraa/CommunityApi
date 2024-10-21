@@ -4,9 +4,10 @@ package org.community.api.service;
 import jakarta.transaction.Transactional;
 import org.community.api.common.CategoryId;
 import org.community.api.controller.exception.ResourceNotFoundException;
+import org.community.api.dto.admin.AdminCategoryDTO;
 import org.community.api.entity.CategoryEntity;
 import org.community.api.repository.CategoryRepository;
-import org.community.api.service.impl.CategoryMapper;
+import org.community.api.mapper.CategoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +22,14 @@ public class CategoryService {
 
     private final CategoryMapper _mapper = new CategoryMapper();
 
-    public Category saveCategory(Category category){
+    public AdminCategoryDTO saveCategory(AdminCategoryDTO category){
         CategoryEntity entity = new CategoryEntity(new CategoryId().uuid(),  category.getName());
         categoryRepository.save(entity);
         return _mapper.toDTO(entity);
     }
 
 
-    public Category findCategoryById(CategoryId id) {
+    public AdminCategoryDTO findCategoryById(CategoryId id) {
         Optional<CategoryEntity> opt = categoryRepository.findById(id.uuid());
         if(opt.isEmpty())
             throw new ResourceNotFoundException("Category with ID " + id.uuid() + " not found.");
@@ -45,14 +46,14 @@ public class CategoryService {
         categoryRepository.deleteById(id.uuid());
     }
 
-    public List<Category> getAllCategories() {
+    public List<AdminCategoryDTO> getAllCategories() {
         List<CategoryEntity> entities = categoryRepository.findAll();
         return _mapper.toDTOList(entities);
     }
 
 
     @Transactional
-    public Category updateCategory(CategoryId id, Category newCategory) {
+    public AdminCategoryDTO updateCategory(CategoryId id, AdminCategoryDTO newCategory) {
         return categoryRepository.findById(id.uuid())
                 .map(categoryEntity -> {
                     categoryEntity.setName(newCategory.getName());

@@ -1,12 +1,14 @@
 package org.community.api.entity;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import java.util.UUID;
 
 @Entity
+@Schema(hidden = true)
 public class MemberEntity {
     @Id
     private UUID id;
@@ -15,8 +17,17 @@ public class MemberEntity {
     private String email;
     private String password;
     private boolean isAdmin;
+    // todo: Created at
 
 
+
+    public MemberEntity(UUID id, String firstName, String lastName, String email, String password) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
     public MemberEntity(UUID id, String firstName, String lastName, String email, String password, boolean isAdmin) {
         this.id = id;
         this.firstName = firstName;
@@ -71,8 +82,4 @@ public class MemberEntity {
     public void setAdmin(boolean admin) {
         this.isAdmin = admin;
     }
-
-
-
-
 }

@@ -9,10 +9,8 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;

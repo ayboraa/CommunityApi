@@ -1,5 +1,6 @@
 package org.community.api.service.impl;
 
+import org.community.api.common.MemberId;
 import org.community.api.entity.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +27,9 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
+    public MemberId getId() {
+        return new MemberId(memberEntity.getId());
+    }
 
     @Override
     public String getPassword() {
@@ -34,26 +38,26 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return memberEntity.getEmail(); // Assuming email is used as username
+        return memberEntity.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Customize as needed
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Customize as needed
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Customize as needed
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Customize as needed
+        return true;
     }
 }

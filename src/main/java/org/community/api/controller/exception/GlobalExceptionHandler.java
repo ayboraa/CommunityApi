@@ -20,6 +20,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
     }
+
+    // Handle UnauthorizedException
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Object> handleResourceNotFoundException(UnauthorizedException ex) {
+        Map<String, String> responseBody = new HashMap<>();
+
+        responseBody.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+    }
     // Handle generic exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex) {

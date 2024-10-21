@@ -7,7 +7,7 @@ import org.community.api.dto.AuthResponse;
 import org.community.api.auth.JwtTokenUtil;
 import org.community.api.common.Email;
 import org.community.api.controller.exception.ResourceNotFoundException;
-import org.community.api.service.Member;
+import org.community.api.dto.user.RegisterMemberDTO;
 import org.community.api.service.MemberService;
 import org.community.api.service.impl.UserDetailsImpl;
 import org.community.api.service.impl.UserDetailsServiceImpl;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 public class AuthController {
 
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -44,29 +45,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
-        // Authenticate the user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
 
-        // Load user details
         UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
 
-        // Generate JWT
         String jwt = jwtTokenUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toUnmodifiableList()));
 
-
-        // Create a cookie for the JWT
         Cookie cookie = new Cookie("JWT", jwt);
-        cookie.setHttpOnly(true); // Prevents JavaScript access to the cookie
-        cookie.setPath("/"); // The path for which the cookie is valid
-        cookie.setMaxAge(86400); // Set the cookie to expire in one day (86400 seconds)
-        cookie.setSecure(true); // Use true if your application is served over HTTPS
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(86400);
+        cookie.setSecure(true);
 
-        // Add the cookie to the response
         response.addCookie(cookie);
 
-        // Return the JWT
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
 
@@ -74,10 +68,11 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Map<String, String> userInfo) {
         String email = userInfo.get("email");
         String password = userInfo.get("password");
+        String name = userInfo.get("name");
+        String surname = userInfo.get("surname");
 
         Email mail = new Email(email);
 
-        // Check if user already exists
         try {
             memberService.findMemberByEmail(mail);
 
@@ -86,9 +81,8 @@ public class AuthController {
             response.put("message", "User already exists");
             return ResponseEntity.badRequest().body(response);
         }catch (ResourceNotFoundException ex){
-            memberService.saveMember(new Member(null, null, null, mail, password, false));
+            memberService.registerMember(new RegisterMemberDTO(name, surname, mail, password));
 
-            // Build the response
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "User registered successfully");

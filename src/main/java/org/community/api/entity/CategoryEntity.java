@@ -3,10 +3,12 @@ package org.community.api.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
 @Entity
+@Schema(hidden = true)
 public class CategoryEntity {
     @Id
     private UUID id;

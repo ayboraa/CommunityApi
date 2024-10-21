@@ -1,4 +1,4 @@
-package org.community.api.service;
+package org.community.api.mapper;
 
 import java.util.List;
 

@@ -1,16 +1,18 @@
-package org.community.api.service;
+package org.community.api.dto.admin;
 
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotBlank;
 import org.community.api.common.CategoryId;
 import org.springframework.util.Assert;
 
-public class Category {
+public class AdminCategoryDTO {
     private CategoryId id;
+    @NotBlank
     private String name;
 
 
-    public Category(@Nullable CategoryId categoryId, String name) {
+    public AdminCategoryDTO(@Nullable CategoryId categoryId, String name) {
         Assert.notNull(name, "Name cannot be null");
 
 

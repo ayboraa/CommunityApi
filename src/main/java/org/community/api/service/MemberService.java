@@ -5,10 +5,17 @@ import jakarta.transaction.Transactional;
 import org.community.api.common.Email;
 import org.community.api.common.MemberId;
 import org.community.api.controller.exception.ResourceNotFoundException;
+import org.community.api.dto.admin.AdminMemberDTO;
+import org.community.api.dto.user.MemberDTO;
+import org.community.api.dto.user.RegisterMemberDTO;
 import org.community.api.entity.MemberEntity;
 import org.community.api.repository.MemberRepository;
-import org.community.api.service.impl.MemberMapper;
+import org.community.api.mapper.MemberMapper;
+import org.community.api.service.impl.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,16 +34,42 @@ public class MemberService {
 
     private final MemberMapper _mapper = new MemberMapper();
 
-    public Member saveMember(Member member){
+    public static MemberId getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return userDetails.getId();
+        }
+        throw new RuntimeException("User not authenticated");
+    }
+
+    public static boolean isCurrentUserAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        throw new RuntimeException("User not authenticated");
+    }
+
+
+    public RegisterMemberDTO registerMember(RegisterMemberDTO member) {
+        // Validate ?
+
+
+        MemberEntity entity = new MemberEntity(new MemberId().uuid(), member.getName(), member.getSurname(), member.getEmail().email(), passwordEncoder.encode(member.getPassword()));
+        memberRepository.save(entity);
+        return member;
+    }
+
+    public AdminMemberDTO saveMember(AdminMemberDTO member){
         MemberEntity entity = new MemberEntity(new MemberId().uuid(), member.getName(), member.getSurname(), member.getEmail().email(), passwordEncoder.encode(member.getPassword()), member.isAdmin());
         memberRepository.save(entity);
         return _mapper.toDTO(entity);
     }
 
 
-
-
-    public Member findMemberByEmail(Email email) {
+    public AdminMemberDTO findMemberByEmail(Email email) {
 
         Optional<MemberEntity> opt = memberRepository.findByEmail(email.email());
         if(opt.isEmpty())
@@ -47,7 +80,7 @@ public class MemberService {
     }
 
 
-    public Member findMemberById(MemberId id) {
+    public AdminMemberDTO findMemberById(MemberId id) {
 
         Optional<MemberEntity> opt = memberRepository.findById(id.uuid());
         if(opt.isEmpty())
@@ -70,13 +103,25 @@ public class MemberService {
 
     }
 
-    public List<Member> getAllMembers() {
+    public List<AdminMemberDTO> getAllMembers() {
         List<MemberEntity> entities = memberRepository.findAll();
         return _mapper.toDTOList(entities);
     }
 
     @Transactional
-    public Member updateMember(MemberId id, Member newMember) {
+    public AdminMemberDTO updateMemberSelf(MemberId id, MemberDTO newMember) {
+        return memberRepository.findById(id.uuid())
+                .map(memberEntity -> {
+                    memberEntity.setFirstName(newMember.getName());
+                    memberEntity.setLastName(newMember.getSurname());
+                    memberEntity.setEmail(newMember.getEmail().email());
+                    return _mapper.toDTO(memberRepository.save(memberEntity));
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with ID: " + id.uuid()));
+    }
+
+    @Transactional
+    public AdminMemberDTO updateMember(MemberId id, AdminMemberDTO newMember) {
         return memberRepository.findById(id.uuid())
                 .map(memberEntity -> {
                     memberEntity.setFirstName(newMember.getName());

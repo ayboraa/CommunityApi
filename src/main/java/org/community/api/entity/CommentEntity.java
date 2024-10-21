@@ -13,14 +13,19 @@ public class CommentEntity {
     private UUID id;
     private String content;
     private UUID authorId;
+    private UUID postId;
+    // todo: Created at
 
-    public CommentEntity() {}
 
-    public CommentEntity(UUID id, String content, UUID authorId) {
+
+    public CommentEntity(UUID id, String content, UUID authorId, UUID postId) {
         this.id = id;
         this.content = content;
         this.authorId = authorId;
+        this.postId = postId;
     }
+
+    public CommentEntity() {}
 
     public UUID getId() {
         return id;
@@ -41,6 +46,14 @@ public class CommentEntity {
     }
     public void setAuthorId(UUID authorId) {
         this.authorId = authorId;
+    }
+
+
+    public UUID getPostId() {
+        return postId;
+    }
+    public void setPostId(UUID postId) {
+        this.postId = postId;
     }
 
 }

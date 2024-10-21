@@ -1,28 +1,28 @@
-package org.community.api.service.impl;
+package org.community.api.mapper;
 
 import org.community.api.common.CategoryId;
 import org.community.api.entity.CategoryEntity;
-import org.community.api.service.Mapper;
-import org.community.api.service.Category;
+import org.community.api.dto.admin.AdminCategoryDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Component
-public class CategoryMapper implements Mapper<Category, CategoryEntity> {
+public class CategoryMapper implements Mapper<AdminCategoryDTO, CategoryEntity> {
     @Override
-    public CategoryEntity toEntity(Category category) {
+    public CategoryEntity toEntity(AdminCategoryDTO category) {
         return new CategoryEntity(category.getId().uuid(), category.getName());
     }
 
     @Override
-    public Category toDTO(CategoryEntity entity) {
-        return new Category(new CategoryId(entity.getId()), entity.getName());
+    public AdminCategoryDTO toDTO(CategoryEntity entity) {
+        return new AdminCategoryDTO(new CategoryId(entity.getId()), entity.getName());
     }
 
     @Override
-    public List<Category> toDTOList(List<CategoryEntity> entities) {
+    public List<AdminCategoryDTO> toDTOList(List<CategoryEntity> entities) {
         return entities.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());

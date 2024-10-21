@@ -16,7 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     public UserDetailsServiceImpl(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository; // Constructor injection
+        this.memberRepository = memberRepository;
     }
 
     @Override
