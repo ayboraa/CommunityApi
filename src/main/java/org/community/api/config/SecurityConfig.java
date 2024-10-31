@@ -1,5 +1,6 @@
-package org.community.api.auth;
+package org.community.api.config;
 
+import org.community.api.auth.JwtRequestFilter;
 import org.community.api.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,10 +33,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF explicitly
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll() // Allow login without authentication
-                        .requestMatchers("/auth/register").permitAll() // Allow register without authentication
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN can access admin endpoints
-                        .anyRequest().authenticated() // Require authentication for all other requests
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

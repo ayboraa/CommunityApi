@@ -2,12 +2,14 @@ package org.community.api.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.community.api.controller.exception.UnauthorizedException;
 import org.community.api.dto.AuthRequest;
 import org.community.api.dto.AuthResponse;
 import org.community.api.auth.JwtTokenUtil;
 import org.community.api.common.Email;
 import org.community.api.controller.exception.ResourceNotFoundException;
 import org.community.api.dto.user.RegisterMemberDTO;
+import org.community.api.service.JwtBlacklistService;
 import org.community.api.service.MemberService;
 import org.community.api.service.impl.UserDetailsImpl;
 import org.community.api.service.impl.UserDetailsServiceImpl;
@@ -17,10 +19,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,10 +38,16 @@ public class AuthController {
     private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
+    private JwtBlacklistService blacklistService;
+
+    @Autowired
     private MemberService memberService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+
+
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
@@ -91,5 +97,29 @@ public class AuthController {
         }
 
     }
+
+    @GetMapping("/logout")
+    public void logout(@CookieValue("JWT") String jwtCookie, HttpServletResponse response) {
+
+        if(jwtTokenUtil.validateToken(jwtCookie)){
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            authentication.setAuthenticated(false);
+
+            blacklistService.blacklistToken(jwtCookie);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+        }else{
+
+
+            throw new UnauthorizedException("Invalid token.");
+
+        }
+
+
+
+
+    }
+
 
 }
